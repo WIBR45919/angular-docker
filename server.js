@@ -1,5 +1,5 @@
-const express = require('express')
-const bodyParser = require('body-parser');
+const express = require('express');//framework permettant la creation d'un serveur Web
+const bodyParser = require('body-parser');//analyser le corps de la requete afin de recuperer les params
 const apiRouter = require('./apiRoutes').router
 
 const APP_PORT = 3000
@@ -18,5 +18,5 @@ server.get('/', (request, response) => {
 server.use('/api/', apiRouter)
 
 server.listen(APP_PORT, () => {
-    console.log('Server stated at port '+ APP_PORT)
+    console.log('Server started at port '+ APP_PORT)
 })

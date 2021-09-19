@@ -1,10 +1,9 @@
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-let models = require('../models')
+import express from 'express';
+import bcrypt from 'bcrypt';
 
 //Routes propres aux utilisateurs
 
-module.export = {
+export let method = {
     register: (req, res) => {
         let userInfos = {
             email: req.body.email,
@@ -25,10 +24,8 @@ module.export = {
             if(!userFound){
                 bcrypt.hash(userInfos.password, 5, function (error, bcryptedPassword) {
                     let newUser = models.User.create({
-                        email: userInfos.email,
-                        username: userInfos.username,
+                        ...userInfos,
                         password: bcryptedPassword,
-                        bio: userInfos.bio,
                         isAdmin: 0
                     })
                     .then(function(newUser){

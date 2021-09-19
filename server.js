@@ -1,14 +1,13 @@
-const express = require('express');//framework permettant la creation d'un serveur Web
-const bodyParser = require('body-parser');//analyser le corps de la requete afin de recuperer les params
-const apiRouter = require('./apiRoutes').router
+import express from 'express';//framework permettant la creation d'un serveur Web
+import { router as apiRouter } from './apiRoutes.js';
 
 const APP_PORT = 3000
 const MYSQL_PORT = 8080
 
 let server = express()
 //Body parser configuration
-server.use(bodyParser.urlencoded({ extended: true }))//récupérer les données du body d'une requete
-server.use(bodyParser.json())//je le transforme au format json
+server.use(express.urlencoded({ extended: true }))//récupérer les données du body d'une requete
+server.use(express.json())//je le transforme au format json
 
 server.get('/', (request, response) => {
     response.setHeader('Content-Type','text/html')

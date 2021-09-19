@@ -1,13 +1,13 @@
 //Imports
-import { Router } from 'express'
-import { method } from './routes/userCtrl.js'
+const express = require('express')
+const userCtrl = require('./routes/userCtrl.js')
 
-export const router = (function () {
-    var apiRoute = Router()
+exports.router = (function () {
+    var apiRoute = express.Router()
 
     //route utilise
-    apiRoute.route('/users/register/').post(method.register)
-    apiRoute.route('/users/login/').post(method.login)
+    apiRoute.route('/users/register/').post(userCtrl.register)
+    apiRoute.route('/users/login/').post(userCtrl.login)
 
     return apiRoute
 })()

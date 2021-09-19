@@ -2,7 +2,6 @@
   "name": "node-mysql",
   "version": "1.0.0",
   "description": "'creation d'une API REST first'",
-  "type": "module",
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",

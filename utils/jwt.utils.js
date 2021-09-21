@@ -10,5 +10,21 @@ module.exports = {
         {
             expiresIn: '1h'
         })
+    },
+    parseAutorization: (authorization) => {
+        return authorization !== null ? authorization.replace('Bearer ',''): '';
+    },
+    getUserId: (authorization) =>{
+        userId = -1;
+        var token = module.exports.parseAutorization(authorization);
+        if(token !== null){
+            try{
+                let jwtToken = jwt.verify(token, JWT_SIGN_TOKEN);
+                if(jwtToken !== null) userId = jwtToken.userId
+
+            }catch(err){ }
+        }
+
+        return userId;
     }
 }

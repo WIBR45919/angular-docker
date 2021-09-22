@@ -2,6 +2,7 @@
 const express = require('express')
 const userCtrl = require('./routes/userCtrl.js')
 const messageCtrl = require('./routes/messageCtrl.js');
+const likeCtrl = require('./routes/likeCtrl.js');
 
 exports.router = (function () {
     var apiRoute = express.Router()
@@ -14,8 +15,9 @@ exports.router = (function () {
 
     //message route utilise
     apiRoute.route('/message/post/').post(messageCtrl.postMessage)
-    apiRoute.route('/message/list/').post(messageCtrl.listMessages)
-    
+    apiRoute.route('/message/list/').get(messageCtrl.listMessages)
+    apiRoute.route('/message/:messageId/vote/like/').post(likeCtrl.likePost)
+    apiRoute.route('/message/:messageId/vote/dislike/').post(likeCtrl.dislikePost)
 
     return apiRoute
 })()

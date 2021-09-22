@@ -19,18 +19,18 @@ module.exports = {
 
         //verification du contenu
 
-        if(message.title != null || message.title.length <= 5){
+        if(message.title == null || message.title.length <= 5){
             res.status(400).json({'error':'Invalid parameters'});
         }
 
-        if(message.content != null || message.content.length < 10){
+        if(message.content == null || message.content.length <= 10){
             res.status(400).json({'error':'Invalid parameters'});
         }
 
         //watterfall 
         asyncLib.waterfall([
            (done)=>{
-            models.User.fondOne({
+            models.User.findOne({
                 where: { id: userId}
             }).then((userFound)=>{
                 done(null, userFound)
@@ -44,10 +44,11 @@ module.exports = {
                          title: message.title,
                          content: message.content,
                          likes: 0,
-                         userId: userFound.id
+                         UserId: userFound.id
                      }).then((newMessage) => {
                          done(newMessage);
                      }).catch((err)=>{
+                         console.log(err);
                          res.status(500).json({'error': 'cannot post message'})
                      })
                }else{
@@ -61,5 +62,30 @@ module.exports = {
             res.status(500).json({'error': 'Message can be create'})
         })
     },
-    listMessages: (req, res)=>{}
+    listMessages: (req, res)=>{
+        let fields = req.query.fields;
+        let limit = parseInt(req.query.limit);
+        let  offset = parseInt(req.query.offset);
+        let order = req.query.order;
+
+        console.log(fields);
+        models.Message.findAll({
+            order: [(order != null) ? order.split(':'): ['title', 'ASC']],
+            attributes: (fields !== '*' && fields != null) ? fields.split(','): null,
+            limit: !isNaN(limit) ? limit : null,
+            offset: (!isNaN(offset) ? offset : null),
+            include:[{
+                model: models.User,
+                attributes: ['username']
+            }]
+        }).then((messages)=>{
+            if(messages){
+                res.status(200).json(messages);
+            }else{
+                res.status(404).json({'error' : 'no message found'});
+            }
+        }).catch((error)=>{
+            res.status(500).json({'error' : 'Internal server error'})
+        })
+    }
 }

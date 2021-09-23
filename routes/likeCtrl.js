@@ -3,6 +3,9 @@ const models = require('../models/index.js');
 const jwtUtils = require('../utils/jwt.utils.js');
 const asyncLib = require('async');
 
+//constants
+const LIKED = 1;
+const DISLIKED = 0
 //imports
 
 module.exports = {
@@ -49,8 +52,8 @@ module.exports = {
                             userId: UserId,
                             messageId: messageId
                         }
-                    }).then(function(isAlreadyLike){
-                        done(null, message, user, isAlreadyLike);
+                    }).then(function(UserAlreadyLikedFound){
+                        done(null, message, user, UserAlreadyLikedFound);
                     }).catch((err)=>{
                         res.status(500).json({'error': 'unable to verify this if user already liked'})
                     })
@@ -58,15 +61,24 @@ module.exports = {
                     res.status(404).json({'error':'user not found'});
                 }
             },
-            (messageFound, userFound, isAlreadyLike, done)=>{
-                if(!isAlreadyLike){
-                    messageFound.addUser(userFound).
+            (messageFound, userFound, UserAlreadyLikedFound, done)=>{
+                if(!UserAlreadyLikedFound){
+                    messageFound.addUser(userFound, { isLike: LIKED }).
                     then((AlreadyLikeFound)=>{
-                        done(null, messageFound, userFound, isAlreadyLike);
+                        done(null, messageFound, userFound, UserAlreadyLikedFound);
                     }).catch((err)=>{
                         res.status(500).json({'error': 'unabled to set user reaction'})
                     })
                 }else{
+                    if(UserAlreadyLikedFound.isLike === DISLIKED){
+                        UserAlreadyLikedFound.update({
+                            isLike: LIKED,
+                        }).then(()=>{
+                            done(null, messageFound, userFound);
+                        }).catch((err)=>{
+                            res.status(500).json({'error': 'cannot update user reaction'})
+                        })
+                    }
                     res.status(409).json({'error': 'message already liked'})
                 }
             },
@@ -130,8 +142,8 @@ module.exports = {
                             userId: UserId,
                             messageId: messageId
                         }
-                    }).then(function(isAlreadyLike){
-                        done(null, message, user, isAlreadyLike);
+                    }).then(function(UserAlreadyLikedFound){
+                        done(null, message, user, UserAlreadyLikedFound);
                     }).catch((err)=>{
                         res.status(500).json({'error': 'unable to verify this if user already disliked'})
                     })
@@ -139,15 +151,24 @@ module.exports = {
                     res.status(404).json({'error':'user not found'});
                 }
             },
-            (messageFound, userFound, isAlreadyLike, done)=>{
-                if(!isAlreadyLike){
-                    messageFound.destroy().
+            (messageFound, userFound, UserAlreadyLikedFound, done)=>{
+                if(!UserAlreadyLikedFound){
+                    messageFound.addUser(userFound, { isLike: DISLIKED }).
                     then(()=>{
                         done(null, messageFound, userFound);
                     }).catch((err)=>{
                         res.status(500).json({'error': 'cannot remove already liked post'})
                     })
                 }else{
+                    if(UserAlreadyLikedFound.isLike === LIKED){
+                        UserAlreadyLikedFound.update({
+                            isLike: DISLIKED,
+                        }).then(()=>{
+                            done(null, messageFound, userFound);
+                        }).catch((err)=>{
+                            res.status(500).json({'error': 'cannot update user reaction'})
+                        })
+                    }
                     done(null, messageFound, userFound);
                 }
             },

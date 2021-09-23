@@ -131,13 +131,13 @@ module.exports = {
                    done(null, userFound);
                 })
                 .catch((err) =>{
-                    console.log(err)
+                    // console.log(err)
                     res.status(500).json({'error' : 'Unable to verify user'})
                 });
             },
             function (userFound, done) { 
                 if(userFound){
-                    console.error(userFound)
+                    // console.error(userFound)
                     userFound.update({
                         bio: (bio ? bio : userFound.bio)
                     }).then(() =>{
